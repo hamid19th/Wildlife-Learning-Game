@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Names Learning Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            width: 100%;
+            position: relative;
+        }
+
+        .home-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .home-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .language-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        select {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #f0f0f0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .card.selected {
+            background: #7fcdbb;
+            color: white;
+            animation: pulse 0.5s;
+        }
+
+        .card.matched {
+            background: #2ca25f;
+            color: white;
+            pointer-events: none;
+            animation: matchAnimation 0.5s;
+        }
+
+        .sound-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .sound-button:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes matchAnimation {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .game-controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background: #2ca25f;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #7fcdbb;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #2d3436;
+        }
+
+        .game-over-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .game-over-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -60%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+        .celebration {
+            font-size: 3em;
+            margin: 20px 0;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .final-score {
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #2ca25f;
+        }
+
+        .encouragement {
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #7fcdbb;
+        }
+
+        @media (max-width: 600px) {
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="home-button">
+            <span>🏠</span>
+            <span>Home</span>
+        </a>
+        <h1>🦋 Wildlife Learning Game 🦜</h1>
+    </header>
+
+    <div class="language-selector">
+        <label for="language">Choose Language: </label>
+        <select id="language">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="it">Italiano</option>
+        </select>
+    </div>
+
+    <main class="game-container">
+        <div class="score-board">
+            <div>Score: <span id="score">0</span></div>
+            <div>Moves: <span id="moves">0</span></div>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div id="cards-container" class="cards-container"></div>
+
+        <div class="game-controls">
+            <button onclick="initGame()">New Game</button>
+        </div>
+    </main>
+
+    <div id="gameOverModal" class="game-over-modal">
+        <div class="game-over-content">
+            <div class="celebration">🎉</div>
+            <h2>Excellent Work!</h2>
+            <div class="final-score">Final Score: <span id="finalScore">0</span></div>
+            <div class="encouragement" id="encouragement"></div>
+            <button onclick="closeGameOver()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const animals = {
+            en: ['Butterfly', 'Parrot', 'Penguin', 'Koala', 'Panda', 'Zebra'],
+            fr: ['Papillon', 'Perroquet', 'Pingouin', 'Koala', 'Panda', 'Zèbre'],
+            es: ['Mariposa', 'Loro', 'Pingüino', 'Koala', 'Panda', 'Cebra'],
+            de: ['Schmetterling', 'Papagei', 'Pinguin', 'Koala', 'Panda', 'Zebra'],
+            it: ['Farfalla', 'Pappagallo', 'Pinguino', 'Koala', 'Panda', 'Zebra']
+        };
+
+        const animalEmojis = {
+            'Butterfly': '🦋', 'Papillon': '🦋', 'Mariposa': '🦋', 'Schmetterling': '🦋', 'Farfalla': '🦋',
+            'Parrot': '🦜', 'Perroquet': '🦜', 'Loro': '🦜', 'Papagei': '🦜', 'Pappagallo': '🦜',
+            'Penguin': '🐧', 'Pingouin': '🐧', 'Pingüino': '🐧', 'Pinguin': '🐧', 'Pinguino': '🐧',
+            'Koala': '🐨', 'Koala': '🐨', 'Koala': '🐨', 'Koala': '🐨', 'Koala': '🐨',
+            'Panda': '🐼', 'Panda': '🐼', 'Panda': '🐼', 'Panda': '🐼', 'Panda': '🐼',
+            'Zebra': '🦓', 'Zèbre': '🦓', 'Cebra': '🦓', 'Zebra': '🦓', 'Zebra': '🦓'
+        };
+
+        const encouragements = [
+            "Amazing job! You're a wildlife expert! 🌟",
+            "Fantastic! You're learning so much! 🎯",
+            "Wonderful! Your memory is impressive! 🏆",
+            "Brilliant! You're mastering new languages! 📚",
+            "Excellent! You're a true nature lover! 🌍"
+        ];
+
+        const languageCodes = {
+            'en': 'en-US',
+            'fr': 'fr-FR',
+            'es': 'es-ES',
+            'de': 'de-DE',
+            'it': 'it-IT'
+        };
+
+        let currentLanguage = 'en';
+        let cards = [];
+        let selectedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let score = 0;
+
+        const languageSelect = document.getElementById('language');
+        languageSelect.addEventListener('change', (e) => {
+            currentLanguage = e.target.value;
+            initGame();
+        });
+
+        function speak(text, lang) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+        }
+
+        function createSoundButton(animal) {
+            const button = document.createElement('button');
+            button.className = 'sound-button';
+            button.innerHTML = '🔊';
+            button.onclick = (e) => {
+                e.stopPropagation();
+                speak(animal, languageCodes[currentLanguage]);
+            };
+            return button;
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function createCard(animal, isImage) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            if (isImage) {
+                card.innerHTML = `<div style="font-size: 60px">${animalEmojis[animal]}</div>`;
+            } else {
+                card.innerHTML = animal;
+                card.appendChild(createSoundButton(animal));
+            }
+            
+            card.dataset.animal = animal;
+            card.addEventListener('click', () => handleCardClick(card));
+            
+            return card;
+        }
+
+        function handleCardClick(card) {
+            if (card.classList.contains('matched') || selectedCards.includes(card)) {
+                return;
+            }
+
+            card.classList.add('selected');
+            selectedCards.push(card);
+
+            speak(card.dataset.animal, languageCodes[currentLanguage]);
+
+            if (selectedCards.length === 2) {
+                moves++;
+                document.getElementById('moves').textContent = moves;
+
+                const [card1, card2] = selectedCards;
+                if (card1.dataset.animal === card2.dataset.animal) {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    matchedPairs++;
+                    score += 10;
+                    document.getElementById('score').textContent = score;
+                    
+                    if (matchedPairs === animals[currentLanguage].length) {
+                        setTimeout(showGameOver, 500);
+                    }
+                }
+
+                setTimeout(() => {
+                    card1.classList.remove('selected');
+                    card2.classList.remove('selected');
+                    selectedCards = [];
+                }, 1000);
+            }
+        }
+
+        function showMessage(text) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            setTimeout(() => {
+                messageEl.textContent = '';
+            }, 3000);
+        }
+
+        function showGameOver() {
+            const modal = document.getElementById('gameOverModal');
+            const finalScore = document.getElementById('finalScore');
+            const encouragement = document.getElementById('encouragement');
+            
+            finalScore.textContent = score;
+            encouragement.textContent = encouragements[Math.floor(Math.random() * encouragements.length)];
+            
+            modal.style.display = 'block';
+            
+            speak("Congratulations! You won!", languageCodes[currentLanguage]);
+        }
+
+        function closeGameOver() {
+            document.getElementById('gameOverModal').style.display = 'none';
+            initGame();
+        }
+
+        function initGame() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+            
+            cards = [];
+            selectedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            score = 0;
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('moves').textContent = moves;
+
+            const currentAnimals = animals[currentLanguage];
+            const gameCards = [];
+
+            currentAnimals.forEach(animal => {
+                gameCards.push({ animal, isImage: true });
+                gameCards.push({ animal, isImage: false });
+            });
+
+            const shuffledCards = shuffleArray(gameCards);
+
+            shuffledCards.forEach(({ animal, isImage }) => {
+                const card = createCard(animal, isImage);
+                container.appendChild(card);
+            });
+        }
+
+        // Initialize game on load
+        initGame();
+    </script>
+</body>
+</html>
