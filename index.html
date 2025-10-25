@@ -31,11 +31,11 @@
 
         .home-button {
             position: absolute;
-            left: 20px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 8px 12px;
+            font-size: 14px;
             border-radius: 5px;
             border: none;
             background: rgba(255, 255, 255, 0.2);
@@ -45,7 +45,8 @@
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 3px;
+            z-index: 10;
         }
 
         .home-button:hover {
@@ -251,12 +252,61 @@
             .cards-container {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .home-button {
+                left: 5px;
+                padding: 6px 8px;
+                font-size: 12px;
+                gap: 2px;
+            }
+            
+            .home-button span:last-child {
+                display: none;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+                padding: 0 50px;
+            }
+            
+            .game-container {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            .score-board {
+                font-size: 1em;
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .home-button {
+                left: 2px;
+                padding: 4px 6px;
+                font-size: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                padding: 0 40px;
+            }
+            
+            .cards-container {
+                gap: 10px;
+            }
+            
+            .card {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <a href=""https://gamezonebrowser.blogspot.com" class="home-button">
+        <a href="https://gamezonebrowser.blogspot.com/" class="home-button">
             <span>🏠</span>
             <span>Home</span>
         </a>
